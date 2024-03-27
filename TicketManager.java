@@ -1,13 +1,9 @@
 import java.io.*;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class TicketManager {
     private Hashtable<Integer, Ticket> ticketCollection = new Hashtable<>();
@@ -122,6 +118,7 @@ public class TicketManager {
         System.out.println("average_of_price : вывести среднее значение поля price для всех элементов коллекции");
         System.out.println("min_by_price : вывести любой объект из коллекции, значение поля price которого является минимальным");
         System.out.println("filter_by_price price : вывести элементы, значение поля price которых равно заданному");
+        System.out.println("print_csv : вывести элементы коллекции в файл в формате CSV");
     }
 
     private void printInfo() {
@@ -132,12 +129,11 @@ public class TicketManager {
     }
 
     private void showTickets() {
-        System.out.println("Элементы коллекции:");
-        for (Ticket ticket : ticketCollection.values()) {
-            System.out.println(ticket);
+        Iterator<Ticket> ticketIterator = ticketCollection.values().iterator();
+        while (ticketIterator.hasNext()) {
+            System.out.println(ticketIterator.next());
         }
     }
-
 
     private void insertTicket() {
         boolean insertSuccess = false;
@@ -181,26 +177,25 @@ public class TicketManager {
                 }
 
                 Coordinates coordinates = new Coordinates(x, y);
+                TicketType type = inputTicketType();
+                Event event = inputEvent();
 
-                // Замените этот блок кода, чтобы получить текущую дату и время
-                ZonedDateTime creationDate = ZonedDateTime.now(ZoneId.of("Europe/Moscow"));
+                // Используйте текущую дату и время
+                ZonedDateTime creationDate = ZonedDateTime.now();
 
                 System.out.print("Введите цену билета: ");
-                double price = scanner.nextDouble();
-                scanner.nextLine();
+                double price = Double.parseDouble(scanner.nextLine());
 
                 System.out.print("Введите значение refundable (true/false): ");
                 String refundableInput = scanner.nextLine();
                 boolean refundable = Boolean.parseBoolean(refundableInput);
 
-                TicketType type = inputTicketType();
-
-                Event event = inputEvent();
-
                 Ticket newTicket = new Ticket(id, name, coordinates, creationDate.toLocalDateTime(), price, refundable, type, event);
                 ticketCollection.put(id, newTicket);
 
                 System.out.println("Элемент успешно создан с идентификатором " + id + " и записан в коллекцию.");
+
+                saveToFile(); // Для сохранения в CSV-файл
 
                 insertSuccess = true;
 
@@ -348,7 +343,7 @@ public class TicketManager {
             }
             System.out.println("Коллекция успешно сохранена в файл.");
 
-            System.out.println("Данные из файла output.csv:");
+            //System.out.println("Данные из файла output.csv:");
             printFileCSV("output.csv");
         } catch (IOException e) {
             System.out.println("Ошибка при сохранении коллекции в файл: " + e.getMessage());
@@ -623,12 +618,12 @@ public class TicketManager {
     public static void main(String[] args) {
         File dataFile = new File("data.csv");
         String fileName = System.getenv("FILENAME");
-//        if (fileName == null) {
-//            System.err.println("Не указано имя файла в переменной окружения FILENAME.");
-//            System.exit(1);
-//        }
 
         TicketManager ticketManager = new TicketManager(dataFile.getPath());
+
+        // Сохраняем в CSV-файл при создании экземпляра
+        ticketManager.saveToFile();
+
         ticketManager.run();
     }
 }

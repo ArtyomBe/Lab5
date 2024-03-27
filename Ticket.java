@@ -17,8 +17,7 @@ public class Ticket {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
-        // Use creationDate and default timezone to create ZonedDateTime
-        this.creationDate = creationDate.atZone(ZoneId.systemDefault());
+        this.creationDate = ZonedDateTime.of(creationDate, ZoneId.systemDefault());
         this.price = price;
         this.refundable = refundable;
         this.type = type;
@@ -49,6 +48,7 @@ public class Ticket {
             Coordinates coordinates = new Coordinates(x, y);
 
             LocalDateTime creationDate = LocalDateTime.parse(tokens[4].trim());
+            ZonedDateTime zonedCreationDate = creationDate.atZone(ZoneId.systemDefault());
 
             double price = Double.parseDouble(tokens[5].trim());
             boolean refundable = Boolean.parseBoolean(tokens[6].trim());
