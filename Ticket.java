@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
@@ -13,10 +14,11 @@ public class Ticket {
     private Event event;
 
     public Ticket(int id, String name, Coordinates coordinates, LocalDateTime creationDate, double price, boolean refundable, TicketType type, Event event) {
-        this.id = generateUniqueId();
+        this.id = id;
         this.name = name;
         this.coordinates = coordinates;
-        this.creationDate = ZonedDateTime.from(creationDate); // Здесь изменено на ZonedDateTime
+        // Use creationDate and default timezone to create ZonedDateTime
+        this.creationDate = creationDate.atZone(ZoneId.systemDefault());
         this.price = price;
         this.refundable = refundable;
         this.type = type;

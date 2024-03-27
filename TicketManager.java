@@ -79,7 +79,7 @@ public class TicketManager {
                         filterByPrice(tokens);
                         break;
                     case "print_csv":
-                        printCSV();
+                        printFileCSV("output.csv");
                         break;
                     default:
                         System.out.println("Неверная команда. Введите 'help' для списка команд.");
@@ -137,6 +137,7 @@ public class TicketManager {
             System.out.println(ticket);
         }
     }
+
 
     private void insertTicket() {
         boolean insertSuccess = false;
@@ -341,14 +342,16 @@ public class TicketManager {
     }
 
     private void saveToFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.csv"))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("output.csv", false))){
             for (Ticket ticket : ticketCollection.values()) {
-                writer.write(ticket.toCSVString());
-                writer.newLine();
+                writer.println(ticket.toCSVString());
             }
             System.out.println("Коллекция успешно сохранена в файл.");
+
+            System.out.println("Данные из файла output.csv:");
+            printFileCSV("output.csv");
         } catch (IOException e) {
-            System.out.println("Ошибка при сохранении коллекции в файл.");
+            System.out.println("Ошибка при сохранении коллекции в файл: " + e.getMessage());
         }
     }
 
@@ -592,26 +595,28 @@ public class TicketManager {
         return id;
     }
 
-    private void printCSV() {
-        String csvFile = "output.csv";
-        String line;
+    private void printFileCSV(String fileName) {
         String cvsSplitBy = ",";
 
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
             while ((line = br.readLine()) != null) {
-                if (!line.isEmpty()) {
-                    String[] data = line.split(cvsSplitBy);
-                    for (int i = 0; i < data.length; i++) {
-                        System.out.print(String.format("%-" + data[i].length() + "s", data[i]));
-                        if (i < data.length - 1) {
-                            System.out.print(" | ");
-                        }
-                    }
-                    System.out.println();
+                String[] data = line.split(cvsSplitBy);
+                if (data.length > 1) {
+                    System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-6s | %-8s | %-12s | %-10s | %-12s",
+                            data[0],
+                            data[1],
+                            data[2].equals("null") ? "" : data[2],
+                            data[3].equals("null") ? "" : data[3],
+                            data[4],
+                            data[5].equals("null") ? "" : data[5],
+                            data[6].equals("null") ? "" : data[6],
+                            data[7].equals("null") ? "" : data[7],
+                            data[8].equals("null") ? "" : data[8]));
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка при чтении файла для вывода: " + e.getMessage());
         }
     }
 
