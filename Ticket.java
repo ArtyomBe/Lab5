@@ -23,7 +23,7 @@ public class Ticket {
         this.type = type;
         this.event = event;
     }
-    private int generateUniqueId() {
+    static int generateUniqueId() {
         return (int) (System.currentTimeMillis() + idCounter++);
     }
     private static int idCounter = 1;
