@@ -38,7 +38,7 @@ public class TicketManager {
                         insertTicket();
                         break;
                     case "update":
-                        updateTicket();
+                        updateTicket(tokens);
                         break;
                     case "remove_key":
                         removeTicketByKey();
@@ -134,13 +134,24 @@ public class TicketManager {
             System.out.println(ticketIterator.next());
         }
     }
+    private int generateUniqueId() {
+        Set<Integer> generatedIds = new HashSet<>();
+        Random random = new Random();
+        int id;
+        do {
+            id = random.nextInt(1_000);
+        } while (generatedIds.contains(id));
+        generatedIds.add(id);
+
+        return id;
+    }
 
     private void insertTicket() {
         boolean insertSuccess = false;
 
         while (!insertSuccess) {
             try {
-                int id = generateUniqueId();
+                int id = generateUniqueTicketId();
 
                 System.out.println("Введите данные для нового элемента:");
 
@@ -178,7 +189,7 @@ public class TicketManager {
 
                 Coordinates coordinates = new Coordinates(x, y);
                 TicketType type = inputTicketType();
-                Event event = inputEvent();
+                Event event = new Event(Ticket.generateUniqueId(), "Default Event", ZonedDateTime.now().toLocalDateTime(), EventType.BASEBALL);
 
                 // Используйте текущую дату и время
                 ZonedDateTime creationDate = ZonedDateTime.now();
@@ -254,7 +265,7 @@ public class TicketManager {
     }
 
 
-    private void updateTicket() {
+    private void updateTicket(String[] tokens) {
         try {
             System.out.print("Введите ID элемента для обновления: ");
             int id = Integer.parseInt(scanner.nextLine());
@@ -578,7 +589,7 @@ public class TicketManager {
     }
 
 
-    private int generateUniqueId() {
+    private int generateUniqueTicketId() {
         Set<Integer> generatedIds = new HashSet<>();
         Random random = new Random();
         int id;
