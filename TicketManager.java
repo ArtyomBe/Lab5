@@ -593,7 +593,7 @@ public class TicketManager {
     private void printFileCSV(String fileName) {
         String cvsSplitBy = ",";
 
-        System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-10s | %-12s",
+        System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
                 "ID",
                 "Name",
                 "X",
@@ -603,6 +603,9 @@ public class TicketManager {
                 "Refundable",
                 "Ticket type",
                 "Event ID",
+                "Еще че-то",
+                "и еще что-то",
+                "и еще что-т2о",
                 "EventName"));
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -610,7 +613,7 @@ public class TicketManager {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(cvsSplitBy);
 
-                System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-10s | %-12s | %-12s | %-12s | %-12s",
+                System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
                         data[0],
                         data[1],
                         data[2],

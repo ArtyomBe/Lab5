@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAccessor;
 
 public class Event
     {
@@ -14,7 +15,7 @@ public class Event
             return name;
         }
 
-        public Object getDateTime() {
+        public TemporalAccessor getDateTime() {
             return date;
         }
 
