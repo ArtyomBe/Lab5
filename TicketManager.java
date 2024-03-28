@@ -195,7 +195,7 @@ public class TicketManager {
 
                 System.out.println("Элемент успешно создан с идентификатором " + id + " и записан в коллекцию.");
 
-                saveToFile(); // Для сохранения в CSV-файл
+                //saveToFile(); // Для сохранения в CSV-файл
 
                 insertSuccess = true;
 
@@ -344,7 +344,7 @@ public class TicketManager {
             System.out.println("Коллекция успешно сохранена в файл.");
 
             //System.out.println("Данные из файла output.csv:");
-            printFileCSV("output.csv");
+            //printFileCSV("output.csv");
         } catch (IOException e) {
             System.out.println("Ошибка при сохранении коллекции в файл: " + e.getMessage());
         }
@@ -593,25 +593,35 @@ public class TicketManager {
     private void printFileCSV(String fileName) {
         String cvsSplitBy = ",";
 
+        System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-10s | %-12s",
+                "ID",
+                "Name",
+                "X",
+                "Y",
+                "Refundable",
+                "Price",
+                "Ticket type",
+                "Event ID",
+                "EventName"));
+
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(cvsSplitBy);
-                if (data.length > 1) {
-                    System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-6s | %-8s | %-12s | %-10s | %-12s",
-                            data[0],
-                            data[1],
-                            data[2].equals("null") ? "" : data[2],
-                            data[3].equals("null") ? "" : data[3],
-                            data[4],
-                            data[5].equals("null") ? "" : data[5],
-                            data[6].equals("null") ? "" : data[6],
-                            data[7].equals("null") ? "" : data[7],
-                            data[8].equals("null") ? "" : data[8]));
-                }
+
+                System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-10s | %-12s",
+                        data[0],
+                        data[1],
+                        data[2],
+                        data[3],
+                        data[4],
+                        data[5],
+                        data[6],
+                        data[7],
+                        data[8]));
             }
         } catch (IOException e) {
-            System.out.println("Ошибка при чтении файла для вывода: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
