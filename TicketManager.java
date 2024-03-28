@@ -13,9 +13,17 @@ public class TicketManager {
     public TicketManager(String fileName) {
         loadCollectionFromFile(fileName);
     }
+    private void printeHelp() {
+        System.out.println("\033[31;1mПРАВИЛА (МИНИ ГАЙД):\033[0m");
+        System.out.println("\033[31;1m1. При вводе данных недопустимо использование знаков препинания, за исключением тех что входят в название функции\033[0m");
+        System.out.println("\033[31;1m2. Для просмотра всех функций введите команду help\033[0m");
+    }
+
 
     public void run() {
+        printeHelp();
         while (true) {
+
             System.out.print("Введите команду (help для списка команд): ");
             String input = scanner.nextLine().trim();
             commandHistory.add(input);
@@ -78,13 +86,74 @@ public class TicketManager {
                         printFileCSV("output.csv");
                         break;
                     default:
-                        System.out.println("Неверная команда. Введите 'help' для списка команд.");
+                        System.out.println("\033[35;1mНеверная команда. Введите 'help' для списка команд.\033[0m");
                         break;
                 }
             }
         }
     }
 
+    private String inputStringValue(String prompt) {
+        while (true) {
+            System.out.print(prompt + ": ");
+            String userInput = scanner.nextLine().trim();
+
+            if (!hasInvalidCharacters(userInput)) {
+                return userInput;
+            }
+
+            System.out.println("\033[35;1mОшибка: недопустимые символы. Попробуйте еще раз.\033[0m");
+        }
+    }
+    //private boolean hasInvalidCharacters(String input) {
+    //    return input.contains(",") || input.contains(".");
+    //}
+    private int inputIntegerValue(String prompt) {
+        while (true) {
+            System.out.print(prompt + ": ");
+            String userInput = scanner.nextLine().trim();
+
+            if (hasInvalidCharacters(userInput)) {
+                System.out.println("\033[35;1mОшибка: недопустимые символы. Попробуйте еще раз.\033[0m");
+                continue;
+            }
+
+            try {
+                int value = Integer.parseInt(userInput);
+                return value;
+            } catch (NumberFormatException e) {
+                System.out.println("\033[35;1mОшибка: неверный формат числа. Попробуйте еще раз.\033[0m");
+            }
+        }
+    }
+
+    private double inputDoubleValue(String prompt) {
+        while (true) {
+            System.out.print(prompt + ": ");
+            String userInput = scanner.nextLine().trim();
+
+            if (hasInvalidCharacters(userInput)) {
+                System.out.println("\033[35;1mОшибка: недопустимые символы. Попробуйте еще раз.\033[0m");
+                continue;
+            }
+
+            try {
+                double value = Double.parseDouble(userInput);
+                return value;
+            } catch (NumberFormatException e) {
+                System.out.println("\033[35;1mОшибка: неверный формат числа. Попробуйте еще раз.\033[0m");
+            }
+        }
+    }
+
+    private boolean hasInvalidCharacters(String input) {
+        for (char c : input.toCharArray()) {
+            if (!Character.isDigit(c) && !Character.isAlphabetic(c)) {
+                return c == ',' || c == '.' || c == ';' || c == '-' || c == '!' || c == '?' || c == '/';
+            }
+        }
+        return false;
+    }
     private void loadCollectionFromFile(String fileName) {
         try (Scanner fileScanner = new Scanner(new FileReader(fileName))) {
             while (fileScanner.hasNextLine()) {
@@ -155,37 +224,17 @@ public class TicketManager {
 
                 System.out.println("Введите данные для нового элемента:");
 
-                System.out.print("Введите имя: ");
-                String name = scanner.nextLine();
+                //System.out.print("Введите имя: ");
+                String name = inputStringValue("Введите имя без символов препинания");
 
-                int x = 0;
-                double y = 0;
+                //int x = 0;
+                //double y = 0;
 
                 // Input x
-                while (true) {
-                    System.out.print("Введите координату x: ");
-                    String xInput = scanner.nextLine();
-
-                    try {
-                        x = Integer.parseInt(xInput);
-                        break;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Ошибка при вводе координаты x. Попробуйте еще раз!");
-                    }
-                }
+                int x = inputIntegerValue("Введите координату x без символов препинания");
 
                 // Input y
-                while (true) {
-                    System.out.print("Введите координату y: ");
-                    String yInput = scanner.nextLine();
-
-                    try {
-                        y = Double.parseDouble(yInput);
-                        break;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Ошибка при вводе координаты y. Попробуйте еще раз!");
-                    }
-                }
+                double y = inputDoubleValue("Введите координату y без символов препинания");
 
                 Coordinates coordinates = new Coordinates(x, y);
                 TicketType type = inputTicketType();
@@ -194,8 +243,8 @@ public class TicketManager {
                 // Используйте текущую дату и время
                 ZonedDateTime creationDate = ZonedDateTime.now();
 
-                System.out.print("Введите цену билета: ");
-                double price = Double.parseDouble(scanner.nextLine());
+                //System.out.print("Введите цену билета: ");
+                double price = inputDoubleValue("Введите цену билета");
 
                 System.out.print("Введите значение refundable (true/false): ");
                 String refundableInput = scanner.nextLine();
@@ -211,7 +260,7 @@ public class TicketManager {
                 insertSuccess = true;
 
             } catch (IllegalArgumentException | DateTimeParseException e) {
-                System.out.println("Ошибка при вводе данных: " + e.getMessage());
+                System.out.println("\033[35;1mОшибка при вводе данных: \033[0m" + e.getMessage());
             }
         }
     }
@@ -234,7 +283,7 @@ public class TicketManager {
         try {
             return TicketType.valueOf(typeStr);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Ошибка: введен некорректный тип билета.");
+            throw new IllegalArgumentException("\033[35;1mОшибка: введен некорректный тип билета.\033[0m");
         }
     }
 
@@ -245,7 +294,7 @@ public class TicketManager {
         int eventId = Integer.parseInt(scanner.nextLine());
 
         System.out.print("Введите название события: ");
-        String eventName = scanner.nextLine();
+        String eventName = inputStringValue("Введите название события без запятых или точек");
 
         System.out.print("Введите тип события (E_SPORTS, BASEBALL, BASKETBALL): ");
         String eventTypeStr = scanner.nextLine().toUpperCase();
@@ -254,10 +303,10 @@ public class TicketManager {
         try {
             eventType = EventType.valueOf(eventTypeStr);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Ошибка: введен некорректный тип события.");
+            throw new IllegalArgumentException("\033[35;1mОшибка: введен некорректный тип события.\033[0m");
         }
 
-        System.out.print("Введите дату события в формате 'ГГГГ-ММ-ДДTHH:MM': ");
+        System.out.print("Введите дату события в формате 'ГГГГ-ММ-ДД HH:MM': ");
         String eventDateStr = scanner.nextLine();
         LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
 
@@ -282,7 +331,7 @@ public class TicketManager {
             System.out.println("Введите новые данные для обновления (оставьте пустым для сохранения текущего значения):");
 
             System.out.print("Введите имя: ");
-            String name = scanner.nextLine();
+            String name = inputStringValue("Введите имя без запятых или точек");
             if (!name.isEmpty()) {
                 currentTicket.setName(name);
             }
@@ -317,11 +366,11 @@ public class TicketManager {
             ticketCollection.put(id, currentTicket);
             System.out.println("Элемент успешно обновлен.");
         } catch (NumberFormatException e) {
-            System.out.println("Ошибка при парсинге числового значения: " + e.getMessage());
+            System.out.println("\033[35;1mОшибка при парсинге числового значения: \033[0m" + e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка при парсинге: " + e.getMessage());
+            System.out.println("\033[35;1mОшибка при парсинге: \033[0m" + e.getMessage());
         } catch (ArrayIndexOutOfBoundsException | DateTimeParseException e) {
-            System.out.println("Ошибка при парсинге строки: некорректные данные.");
+            System.out.println("\033[35;1mОшибка при парсинге строки: некорректные данные.\033[0m");
         }
     }
 
@@ -338,7 +387,7 @@ public class TicketManager {
             ticketCollection.remove(key);
             System.out.println("Элемент успешно удален.");
         } catch (NumberFormatException e) {
-            System.out.println("Ошибка: введено некорректное значение для ключа.");
+            System.out.println("\033[35;1mОшибка: введено некорректное значение для ключа.\033[0m");
         }
     }
 
@@ -357,7 +406,7 @@ public class TicketManager {
             //System.out.println("Данные из файла output.csv:");
             //printFileCSV("output.csv");
         } catch (IOException e) {
-            System.out.println("Ошибка при сохранении коллекции в файл: " + e.getMessage());
+            System.out.println("\033[35;1mОшибка при сохранении коллекции в файл: \033[0m" + e.getMessage());
         }
     }
 
@@ -365,7 +414,7 @@ public class TicketManager {
     private void executeScript(String[] tokens) {
         try {
             if (tokens.length < 2) {
-                System.out.println("Ошибка: не указано имя файла для выполнения скрипта.");
+                System.out.println("\033[35;1mОшибка: не указано имя файла для выполнения скрипта.\033[0m");
                 return;
             }
 
@@ -399,13 +448,13 @@ public class TicketManager {
             fileScanner.close();
             System.out.println("Скрипт успешно выполнен.");
         } catch (FileNotFoundException e) {
-            System.out.println("Ошибка: файл скрипта не найден.");
+            System.out.println("\033[35;1mОшибка: файл скрипта не найден.\033[0m");
         }
     }
 
     private void executeInsertScript(String[] scriptTokens) {
         if (scriptTokens.length < 3) {
-            System.out.println("Ошибка: недостаточно аргументов для команды insert.");
+            System.out.println("\033[35;1mОшибка: недостаточно аргументов для команды insert.\033[0m");
             return;
         }
 
@@ -414,7 +463,7 @@ public class TicketManager {
             int key = Integer.parseInt(keyStr);
 
             if (ticketCollection.containsKey(key)) {
-                System.out.println("Ошибка: элемент с указанным ключом уже существует.");
+                System.out.println("\033[35;1mОшибка: элемент с указанным ключом уже существует.\033[0m");
                 return;
             }
 
@@ -425,17 +474,17 @@ public class TicketManager {
                 ticketCollection.put(key, newTicket);
                 System.out.println("Элемент успешно добавлен из скрипта.");
             } else {
-                System.out.println("Ошибка при парсинге данных для команды insert из скрипта.");
+                System.out.println("\033[35;1mОшибка при парсинге данных для команды insert из скрипта.\033[0m");
             }
         } catch (NumberFormatException e) {
-            System.out.println("Ошибка: некорректное значение ключа для команды insert из скрипта.");
+            System.out.println("\033[35;1mОшибка: некорректное значение ключа для команды insert из скрипта.\033[0m");
         }
     }
 
 
     private void executeUpdateScript(String[] scriptTokens) {
         if (scriptTokens.length < 3) {
-            System.out.println("Ошибка: недостаточно аргументов для команды update.");
+            System.out.println("\033[35;1mОшибка: недостаточно аргументов для команды update.\033[0m");
             return;
         }
 
@@ -444,7 +493,7 @@ public class TicketManager {
             int key = Integer.parseInt(keyStr);
 
             if (!ticketCollection.containsKey(key)) {
-                System.out.println("Ошибка: элемент с указанным ключом не найден.");
+                System.out.println("\033[35;1mОшибка: элемент с указанным ключом не найден.\033[0m");
                 return;
             }
 
@@ -455,10 +504,10 @@ public class TicketManager {
                 ticketCollection.put(key, updatedTicket);
                 System.out.println("Элемент успешно обновлен из скрипта.");
             } else {
-                System.out.println("Ошибка при парсинге данных для команды update из скрипта.");
+                System.out.println("\033[35;1mОшибка при парсинге данных для команды update из скрипта.\033[0m");
             }
         } catch (NumberFormatException e) {
-            System.out.println("Ошибка: некорректное значение ключа для команды update из скрипта.");
+            System.out.println("\033[35;1mОшибка: некорректное значение ключа для команды update из скрипта.\033[0m");
         }
     }
 
@@ -502,9 +551,9 @@ public class TicketManager {
 
             ticketCollection.put(key, currentTicket);
         } catch (NumberFormatException e) {
-            System.out.println("Ошибка при парсинге числового значения: " + e.getMessage());
+            System.out.println("\033[35;1mОшибка при парсинге числового значения: \033[0m" + e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка при парсинге: " + e.getMessage());
+            System.out.println("\033[35;1mОшибка при парсинге: \033[0m" + e.getMessage());
         }
     }
 
@@ -518,7 +567,7 @@ public class TicketManager {
 
             System.out.println("Элементы успешно удалены.");
         } catch (NumberFormatException e) {
-            System.out.println("Ошибка: введено некорректное значение для ключа.");
+            System.out.println("\033[35;1mОшибка: введено некорректное значение для ключа.\033[0m");
         }
     }
 
@@ -562,7 +611,7 @@ public class TicketManager {
 
     private void filterByPrice(String[] tokens) {
         if (tokens.length < 2) {
-            System.out.println("Ошибка: не указано значение цены для фильтрации.");
+            System.out.println("\033[35;1mОшибка: не указано значение цены для фильтрации.\033[0m");
             return;
         }
 
@@ -584,7 +633,7 @@ public class TicketManager {
             }
 
         } catch (NumberFormatException e) {
-            System.out.println("Ошибка при парсинге числового значения цены: " + e.getMessage());
+            System.out.println("\033[35;1mОшибка при парсинге числового значения цены: \033[0m" + e.getMessage());
         }
     }
 
@@ -604,39 +653,43 @@ public class TicketManager {
     private void printFileCSV(String fileName) {
         String cvsSplitBy = ",";
 
-        System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
-                "ID",
-                "Name",
-                "X",
-                "Y",
-                "Date",
-                "Price",
-                "Refundable",
-                "Ticket type",
-                "Event ID",
-                "Еще че-то",
-                "и еще что-то",
-                "и еще что-т2о",
-                "EventName"));
+        System.out.println("\033[0;34m" +
+                String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
+                        "ID",
+                        "Name",
+                        "X",
+                        "Y",
+                        "Date",
+                        "Price",
+                        "Refundable",
+                        "Ticket type",
+                        "Event ID",
+                        "Еще че-то",
+                        "и еще что-то",
+                        "и еще что-т2о",
+                        "EventName") +
+                "\033[0m");
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(cvsSplitBy);
 
-                System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
-                        data[0],
-                        data[1],
-                        data[2],
-                        data[3],
-                        data[4],
-                        data[5],
-                        data[6],
-                        data[7],
-                        data[8],
-                        data[9],
-                        data[10],
-                        data[11]));
+                System.out.println("\033[0;34m" +
+                        String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
+                                data[0],
+                                data[1],
+                                data[2],
+                                data[3],
+                                data[4],
+                                data[5],
+                                data[6],
+                                data[7],
+                                data[8],
+                                data[9],
+                                data[10],
+                                data[11]) +
+                        "\033[0m");
             }
         } catch (IOException e) {
             e.printStackTrace();
