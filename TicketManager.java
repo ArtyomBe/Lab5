@@ -598,8 +598,9 @@ public class TicketManager {
                 "Name",
                 "X",
                 "Y",
-                "Refundable",
+                "Date",
                 "Price",
+                "Refundable",
                 "Ticket type",
                 "Event ID",
                 "EventName"));
@@ -609,7 +610,7 @@ public class TicketManager {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(cvsSplitBy);
 
-                System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-10s | %-12s",
+                System.out.println(String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-10s | %-12s | %-12s | %-12s | %-12s",
                         data[0],
                         data[1],
                         data[2],
@@ -618,7 +619,10 @@ public class TicketManager {
                         data[5],
                         data[6],
                         data[7],
-                        data[8]));
+                        data[8],
+                        data[9],
+                        data[10],
+                        data[11]));
             }
         } catch (IOException e) {
             e.printStackTrace();
