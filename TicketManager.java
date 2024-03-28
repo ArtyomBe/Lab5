@@ -17,8 +17,17 @@ public class TicketManager {
         System.out.println("\033[31;1mПРАВИЛА (МИНИ ГАЙД):\033[0m");
         System.out.println("\033[31;1m1. При вводе данных недопустимо использование знаков препинания, за исключением тех что входят в название функции\033[0m");
         System.out.println("\033[31;1m2. Для просмотра всех функций введите команду help\033[0m");
+        System.out.println("");
+        System.out.println("\033[36;1m╱▔▔▔▔▔▔▔╲╱▔▔▔▔▔╲\033[0m");
+        System.out.println("\033[36;1m▏╮╭┈┈╮╭┈╮▏╭╮┈╭╮▕\033[0m");
+        System.out.println("\033[36;1m▏┊╱▔▉┊╱▔▉▏▊┃▕▋┃▕\033[0m");
+        System.out.println("\033[36;1m▏╯╲▂╱┊╲▂╱▏▔▅┈▔▔▕\033[0m ARTYOM BETEKHTIN AND STEPAN VOROBYEV FROM INFOCHEMISTRY LAB 5" );
+        System.out.println("\033[36;1m╲╭┳┳╮▕▋╭╱╲┳┳┳┫▂╱\033[0m");
+        System.out.println("\033[36;1m┈▔▏┣┳┳┳┳▏▕┻┻┻╯▏┈\033[0m");
+        System.out.println("\033[36;1m┈┈▏╰┻┻┻┻▏▕▂▂▂╱┈┈\033[0m");
+        System.out.println("\033[36;1m┈┈╲▂▂▂▂▂▏┈┈┈┈┈┈┈ \033[0m");
+        System.out.println("");
     }
-
 
     public void run() {
         printeHelp();
@@ -105,9 +114,7 @@ public class TicketManager {
             System.out.println("\033[35;1mОшибка: недопустимые символы. Попробуйте еще раз.\033[0m");
         }
     }
-    //private boolean hasInvalidCharacters(String input) {
-    //    return input.contains(",") || input.contains(".");
-    //}
+
     private int inputIntegerValue(String prompt) {
         while (true) {
             System.out.print(prompt + ": ");
@@ -202,17 +209,6 @@ public class TicketManager {
         while (ticketIterator.hasNext()) {
             System.out.println(ticketIterator.next());
         }
-    }
-    private int generateUniqueId() {
-        Set<Integer> generatedIds = new HashSet<>();
-        Random random = new Random();
-        int id;
-        do {
-            id = random.nextInt(1_000);
-        } while (generatedIds.contains(id));
-        generatedIds.add(id);
-
-        return id;
     }
 
     private void insertTicket() {
@@ -402,14 +398,10 @@ public class TicketManager {
                 writer.println(ticket.toCSVString());
             }
             System.out.println("Коллекция успешно сохранена в файл.");
-
-            //System.out.println("Данные из файла output.csv:");
-            //printFileCSV("output.csv");
         } catch (IOException e) {
             System.out.println("\033[35;1mОшибка при сохранении коллекции в файл: \033[0m" + e.getMessage());
         }
     }
-
 
     private void executeScript(String[] tokens) {
         try {
@@ -698,7 +690,7 @@ public class TicketManager {
 
     public static void main(String[] args) {
         File dataFile = new File("data.csv");
-        String fileName = System.getenv("FILENAME");
+        //String fileName = System.getenv("FILENAME");
 
         TicketManager ticketManager = new TicketManager(dataFile.getPath());
 
