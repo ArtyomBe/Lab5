@@ -23,10 +23,13 @@ public class Ticket {
         this.type = type;
         this.event = event;
     }
-    static int generateUniqueId() {
+
+    private int generateUniqueId() {
         return (int) (System.currentTimeMillis() + idCounter++);
     }
+
     private static int idCounter = 1;
+
     @Override
     public int hashCode() {
         return id;
@@ -74,6 +77,7 @@ public class Ticket {
             return null;
         }
     }
+
     public String toCSVString() {
         return String.format("%d,%s,%d,%.1f,%s,%.1f,%b,%s,%d,%s,%s,%s",
                 id, name, coordinates.getX(), coordinates.getY(),
@@ -138,7 +142,6 @@ public class Ticket {
     public Coordinates getCoordinates() {
         return coordinates;
     }
-
     public TicketType getType() {
         return type;
     }
