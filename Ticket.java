@@ -23,10 +23,7 @@ public class Ticket {
         this.type = type;
         this.event = event;
     }
-    static int generateUniqueId() {
-        return (int) (System.currentTimeMillis() + idCounter++);
-    }
-    private static int idCounter = 1;
+
     @Override
     public int hashCode() {
         return id;
@@ -48,7 +45,6 @@ public class Ticket {
             Coordinates coordinates = new Coordinates(x, y);
 
             LocalDateTime creationDate = LocalDateTime.parse(tokens[4].trim());
-            ZonedDateTime zonedCreationDate = creationDate.atZone(ZoneId.systemDefault());
 
             double price = Double.parseDouble(tokens[5].trim());
             boolean refundable = Boolean.parseBoolean(tokens[6].trim());
@@ -125,26 +121,6 @@ public class Ticket {
 
     public double getPrice() {
         return price;
-    }
-
-    public boolean isRefundable() {
-        return refundable;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
-
-    public TicketType getType() {
-        return type;
-    }
-
-    public Event getEvent() {
-        return event;
     }
 
     public void setPrice(double price) {

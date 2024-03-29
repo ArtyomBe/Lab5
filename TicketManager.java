@@ -55,7 +55,7 @@ public class TicketManager {
                         insertTicket();
                         break;
                     case "update":
-                        updateTicket(tokens);
+                        updateTicket();
                         break;
                     case "remove_key":
                         removeTicketByKey();
@@ -126,8 +126,7 @@ public class TicketManager {
             }
 
             try {
-                int value = Integer.parseInt(userInput);
-                return value;
+                return Integer.parseInt(userInput);
             } catch (NumberFormatException e) {
                 System.out.println("\033[35;1mОшибка: неверный формат числа. Попробуйте еще раз.\033[0m");
             }
@@ -145,8 +144,7 @@ public class TicketManager {
             }
 
             try {
-                double value = Double.parseDouble(userInput);
-                return value;
+                return Double.parseDouble(userInput);
             } catch (NumberFormatException e) {
                 System.out.println("\033[35;1mОшибка: неверный формат числа. Попробуйте еще раз.\033[0m");
             }
@@ -205,9 +203,8 @@ public class TicketManager {
     }
 
     private void showTickets() {
-        Iterator<Ticket> ticketIterator = ticketCollection.values().iterator();
-        while (ticketIterator.hasNext()) {
-            System.out.println(ticketIterator.next());
+        for (Ticket ticket : ticketCollection.values()) {
+            System.out.println(ticket);
         }
     }
 
@@ -221,9 +218,6 @@ public class TicketManager {
                 ticketCollection.put(id, newTicket);
 
                 System.out.println("Элемент успешно создан с идентификатором " + id + " и записан в коллекцию.");
-
-                //saveToFile(); // Для сохранения в CSV-файл
-
                 insertSuccess = true;
 
             } catch (IllegalArgumentException | DateTimeParseException e) {
@@ -234,34 +228,21 @@ public class TicketManager {
 
     private Ticket inputTicketInfo() {
         System.out.println("Введите данные для нового элемента:");
-
-        //System.out.print("Введите имя: ");
         String name = inputStringValue("Введите имя без символов препинания");
-
-        //int x = 0;
         int x = inputIntegerValue("Введите координату x без символов препинания");
-
-        // Input y
         double y = inputDoubleValue("Введите координату y без символов препинания");
 
         Coordinates coordinates = new Coordinates(x, y);
         TicketType type = inputTicketType();
-
-        // Get Event information
         Event event = inputEvent();
-
-        // Используйте текущую дату и время
         ZonedDateTime creationDate = ZonedDateTime.now();
-
-        //System.out.print("Введите цену билета: ");
         double price = inputDoubleValue("Введите цену билета");
 
         System.out.print("Введите значение refundable (true/false): ");
         String refundableInput = scanner.nextLine();
         boolean refundable = Boolean.parseBoolean(refundableInput);
         int id = generateUniqueTicketId();
-        Ticket newTicket = new Ticket(id, name, coordinates, creationDate.toLocalDateTime(), price, refundable, type, event);
-        return newTicket;
+        return new Ticket(id, name, coordinates, creationDate.toLocalDateTime(), price, refundable, type, event);
     }
     private Coordinates inputCoordinates() {
         System.out.println("Введите координаты:");
@@ -307,11 +288,12 @@ public class TicketManager {
 
         return new Event(eventId, eventName, eventDate, eventType);
     }
+
     private Event inputEvent() {
-        Event event = inputEventInfo();
-        return event;
+        return inputEventInfo();
     }
-    private Event inputUpdatedEventInfo(Ticket ticket) {
+
+    private Event inputUpdatedEventInfo() {
         System.out.print("Введите новое название события: ");
         String eventName = inputStringValue("Введите новое название события без запятых или точек");
 
@@ -331,13 +313,13 @@ public class TicketManager {
             throw new IllegalArgumentException("\033[35;1mОшибка: введен некорректный тип события.\033[0m");
         }
 
-        Event updatedEvent = new Event(eventId, eventName, eventDate, eventType);
-        return updatedEvent;
+        return new Event(eventId, eventName, eventDate, eventType);
     }
+
     private void updateEvent(Ticket ticket) {
         System.out.println("Введите новые данные для события:");
 
-        Event updatedEvent = inputUpdatedEventInfo(ticket);
+        Event updatedEvent = inputUpdatedEventInfo();
 
         ticket.setEvent(updatedEvent);
         ticketCollection.put(ticket.getId(), ticket);
@@ -345,8 +327,7 @@ public class TicketManager {
         System.out.println("Событие успешно обновлено.");
     }
 
-
-    private void updateTicket(String[] tokens) {
+    private void updateTicket() {
         try {
             System.out.print("Введите ID элемента для обновления: ");
             int id = Integer.parseInt(scanner.nextLine());
@@ -511,7 +492,6 @@ public class TicketManager {
         }
     }
 
-
     private void executeUpdateScript(String[] scriptTokens) {
         if (scriptTokens.length < 3) {
             System.out.println("\033[35;1mОшибка: недостаточно аргументов для команды update.\033[0m");
@@ -587,7 +567,6 @@ public class TicketManager {
         }
     }
 
-
     private void removeGreaterByKey() {
         try {
             System.out.print("Введите ключ, по которому нужно удалить элементы: ");
@@ -600,7 +579,6 @@ public class TicketManager {
             System.out.println("\033[35;1mОшибка: введено некорректное значение для ключа.\033[0m");
         }
     }
-
 
     private void calculateAveragePrice() {
         if (ticketCollection.isEmpty()) {
@@ -616,7 +594,6 @@ public class TicketManager {
         double averagePrice = totalSum / ticketCollection.size();
         System.out.println("Среднее значение цены билетов: " + averagePrice);
     }
-
 
     private void findMinByPrice() {
         if (ticketCollection.isEmpty()) {
@@ -637,7 +614,6 @@ public class TicketManager {
         System.out.println("Билет с минимальной ценой:");
         System.out.println(minTicket);
     }
-
 
     private void filterByPrice(String[] tokens) {
         if (tokens.length < 2) {
@@ -667,14 +643,11 @@ public class TicketManager {
         }
     }
 
-
     private int generateUniqueTicketId() {
         Set<Integer> generatedIds = new HashSet<>();
         Random random = new Random();
         int id;
-        do {
-            id = random.nextInt(1_000);
-        } while (generatedIds.contains(id));
+        id = random.nextInt(1_000);
         generatedIds.add(id);
 
         return id;
@@ -725,13 +698,8 @@ public class TicketManager {
 
     public static void main(String[] args) {
         File dataFile = new File("data.csv");
-        //String fileName = System.getenv("FILENAME");
-
         TicketManager ticketManager = new TicketManager(dataFile.getPath());
-
-        // Сохраняем в CSV-файл при создании экземпляра
         ticketManager.saveToFile();
-
         ticketManager.run();
     }
 }
