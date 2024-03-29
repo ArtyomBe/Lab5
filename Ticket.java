@@ -103,7 +103,7 @@ public class Ticket {
             Ticket ticket = new Ticket(id, name, coordinates, creationDate, price, refundable, type, null);
 
             // Если есть информация о событии (больше 8 значений), парсим ее и добавляем к объекту Ticket
-            if (tokens.length > 8) {
+            if (tokens.length > 4) {
                 int eventId = Integer.parseInt(tokens[8].trim());
                 String eventName = tokens[9].trim();
                 LocalDateTime eventDate = LocalDateTime.parse(tokens[10].trim());
@@ -158,6 +158,7 @@ public class Ticket {
     public void setName(String name) {
         this.name = name;
     }
+
 
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;

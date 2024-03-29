@@ -156,7 +156,7 @@ public class TicketManager {
     private boolean hasInvalidCharacters(String input) {
         for (char c : input.toCharArray()) {
             if (!Character.isDigit(c) && !Character.isAlphabetic(c)) {
-                return c == ',' || c == '.' || c == ';' || c == '-' || c == '!' || c == '?' || c == '/';
+                return c == ',' || c == '.' || c == ';' || c == '!' || c == '?' || c == '/';
             }
         }
         return false;
@@ -217,36 +217,7 @@ public class TicketManager {
         while (!insertSuccess) {
             try {
                 int id = generateUniqueTicketId();
-
-                System.out.println("Введите данные для нового элемента:");
-
-                //System.out.print("Введите имя: ");
-                String name = inputStringValue("Введите имя без символов препинания");
-
-                //int x = 0;
-                //double y = 0;
-
-                // Input x
-                int x = inputIntegerValue("Введите координату x без символов препинания");
-
-                // Input y
-                double y = inputDoubleValue("Введите координату y без символов препинания");
-
-                Coordinates coordinates = new Coordinates(x, y);
-                TicketType type = inputTicketType();
-                Event event = new Event(Ticket.generateUniqueId(), "Default Event", ZonedDateTime.now().toLocalDateTime(), EventType.BASEBALL);
-
-                // Используйте текущую дату и время
-                ZonedDateTime creationDate = ZonedDateTime.now();
-
-                //System.out.print("Введите цену билета: ");
-                double price = inputDoubleValue("Введите цену билета");
-
-                System.out.print("Введите значение refundable (true/false): ");
-                String refundableInput = scanner.nextLine();
-                boolean refundable = Boolean.parseBoolean(refundableInput);
-
-                Ticket newTicket = new Ticket(id, name, coordinates, creationDate.toLocalDateTime(), price, refundable, type, event);
+                Ticket newTicket = inputTicketInfo();
                 ticketCollection.put(id, newTicket);
 
                 System.out.println("Элемент успешно создан с идентификатором " + id + " и записан в коллекцию.");
@@ -261,6 +232,37 @@ public class TicketManager {
         }
     }
 
+    private Ticket inputTicketInfo() {
+        System.out.println("Введите данные для нового элемента:");
+
+        //System.out.print("Введите имя: ");
+        String name = inputStringValue("Введите имя без символов препинания");
+
+        //int x = 0;
+        int x = inputIntegerValue("Введите координату x без символов препинания");
+
+        // Input y
+        double y = inputDoubleValue("Введите координату y без символов препинания");
+
+        Coordinates coordinates = new Coordinates(x, y);
+        TicketType type = inputTicketType();
+
+        // Get Event information
+        Event event = inputEvent();
+
+        // Используйте текущую дату и время
+        ZonedDateTime creationDate = ZonedDateTime.now();
+
+        //System.out.print("Введите цену билета: ");
+        double price = inputDoubleValue("Введите цену билета");
+
+        System.out.print("Введите значение refundable (true/false): ");
+        String refundableInput = scanner.nextLine();
+        boolean refundable = Boolean.parseBoolean(refundableInput);
+        int id = generateUniqueTicketId();
+        Ticket newTicket = new Ticket(id, name, coordinates, creationDate.toLocalDateTime(), price, refundable, type, event);
+        return newTicket;
+    }
     private Coordinates inputCoordinates() {
         System.out.println("Введите координаты:");
         System.out.print("Введите x: ");
@@ -283,18 +285,19 @@ public class TicketManager {
         }
     }
 
-    private Event inputEvent() {
-        System.out.println("Введите данные для события (если есть):");
-
-        System.out.print("Введите ID события: ");
-        int eventId = Integer.parseInt(scanner.nextLine());
-
+    private Event inputEventInfo() {
         System.out.print("Введите название события: ");
         String eventName = inputStringValue("Введите название события без запятых или точек");
 
+        System.out.print("Введите ID события: ");
+        int eventId = inputIntegerValue("Введите ID события без символов препинания");
+
+        System.out.print("Введите дату события в формате 'ГГГГ-ММ-ДД HH:MM': ");
+        String eventDateStr = scanner.nextLine();
+        LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm"));
+
         System.out.print("Введите тип события (E_SPORTS, BASEBALL, BASKETBALL): ");
         String eventTypeStr = scanner.nextLine().toUpperCase();
-
         EventType eventType;
         try {
             eventType = EventType.valueOf(eventTypeStr);
@@ -302,11 +305,44 @@ public class TicketManager {
             throw new IllegalArgumentException("\033[35;1mОшибка: введен некорректный тип события.\033[0m");
         }
 
-        System.out.print("Введите дату события в формате 'ГГГГ-ММ-ДД HH:MM': ");
+        return new Event(eventId, eventName, eventDate, eventType);
+    }
+    private Event inputEvent() {
+        Event event = inputEventInfo();
+        return event;
+    }
+    private Event inputUpdatedEventInfo(Ticket ticket) {
+        System.out.print("Введите новое название события: ");
+        String eventName = inputStringValue("Введите новое название события без запятых или точек");
+
+        System.out.print("Введите новый ID события: ");
+        int eventId = inputIntegerValue("Введите новый ID события без символов препинания");
+
+        System.out.print("Введите новую дату события в формате 'ГГГГ-ММ-ДД HH:MM': ");
         String eventDateStr = scanner.nextLine();
         LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
 
-        return new Event(eventId, eventName, eventDate, eventType);
+        System.out.print("Введите новый тип события (E_SPORTS, BASEBALL, BASKETBALL): ");
+        String eventTypeStr = scanner.nextLine().toUpperCase();
+        EventType eventType;
+        try {
+            eventType = EventType.valueOf(eventTypeStr);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("\033[35;1mОшибка: введен некорректный тип события.\033[0m");
+        }
+
+        Event updatedEvent = new Event(eventId, eventName, eventDate, eventType);
+        return updatedEvent;
+    }
+    private void updateEvent(Ticket ticket) {
+        System.out.println("Введите новые данные для события:");
+
+        Event updatedEvent = inputUpdatedEventInfo(ticket);
+
+        ticket.setEvent(updatedEvent);
+        ticketCollection.put(ticket.getId(), ticket);
+
+        System.out.println("Событие успешно обновлено.");
     }
 
 
@@ -331,7 +367,9 @@ public class TicketManager {
             if (!name.isEmpty()) {
                 currentTicket.setName(name);
             }
-
+            if (!inputStringValue("Введите новое название события (оставить пустым, чтобы не обновлять)").isEmpty()) {
+                updateEvent(currentTicket);
+            }
             Coordinates coordinates = inputCoordinates();
             currentTicket.setCoordinates(coordinates);
 
@@ -646,20 +684,18 @@ public class TicketManager {
         String cvsSplitBy = ",";
 
         System.out.println("\033[0;34m" +
-                String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
+                String.format("%-4s | %-15s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s",
                         "ID",
-                        "Name",
+                        "Ticket name",
                         "X",
                         "Y",
-                        "Date",
+                        "Date of create ticket",
                         "Price",
                         "Refundable",
                         "Ticket type",
                         "Event ID",
-                        "Еще че-то",
-                        "и еще что-то",
-                        "и еще что-т2о",
-                        "EventName") +
+                        "Event name",
+                        "Event Date") +
                 "\033[0m");
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -668,7 +704,7 @@ public class TicketManager {
                 String[] data = line.split(cvsSplitBy);
 
                 System.out.println("\033[0;34m" +
-                        String.format("%-4s | %-5s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s",
+                        String.format("%-4s | %-15s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s",
                                 data[0],
                                 data[1],
                                 data[2],
@@ -679,8 +715,7 @@ public class TicketManager {
                                 data[7],
                                 data[8],
                                 data[9],
-                                data[10],
-                                data[11]) +
+                                data[10]) +
                         "\033[0m");
             }
         } catch (IOException e) {
