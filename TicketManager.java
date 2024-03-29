@@ -6,7 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class TicketManager {
-    private Hashtable<Integer, Ticket> ticketCollection = new Hashtable<>();
+    private LinkedHashMap<Integer, Ticket> ticketCollection = new LinkedHashMap<>();
     private Scanner scanner = new Scanner(System.in);
     private Deque<String> commandHistory = new LinkedList<>();
 
@@ -16,7 +16,7 @@ public class TicketManager {
     private void printeHelp() {
         System.out.println("\033[31;1mПРАВИЛА (МИНИ ГАЙД):\033[0m");
         System.out.println("\033[31;1m1. При вводе данных недопустимо использование знаков препинания, за исключением тех что входят в название функции\033[0m");
-        System.out.println("\033[31;1m2. Для просмотра всех функций введите команду help\033[0m");
+        System.out.println("\033[31;1m2. Для просмотра всех доступных функций (команд) введите команду help\033[0m");
         System.out.println("");
         System.out.println("\033[36;1m╱▔▔▔▔▔▔▔╲╱▔▔▔▔▔╲\033[0m");
         System.out.println("\033[36;1m▏╮╭┈┈╮╭┈╮▏╭╮┈╭╮▕\033[0m");
@@ -193,6 +193,7 @@ public class TicketManager {
         System.out.println("min_by_price : вывести любой объект из коллекции, значение поля price которого является минимальным");
         System.out.println("filter_by_price price : вывести элементы, значение поля price которых равно заданному");
         System.out.println("print_csv : вывести элементы коллекции в файл в формате CSV");
+        System.out.println("print_unique_event_names : вывести уникальные названия событий в коллекции");
     }
 
     private void printInfo() {
@@ -228,21 +229,15 @@ public class TicketManager {
 
     private Ticket inputTicketInfo() {
         System.out.println("Введите данные для нового элемента:");
-        String name = inputStringValue("Введите имя без символов препинания");
+        String name = inputStringValue("Введите название билета без символов препинания");
         int x = inputIntegerValue("Введите координату x без символов препинания");
         double y = inputDoubleValue("Введите координату y без символов препинания");
-
         Coordinates coordinates = new Coordinates(x, y);
-        TicketType type = inputTicketType();
-        Event event = inputEvent();
-        ZonedDateTime creationDate = ZonedDateTime.now();
+        Event event = inputEventInfo();
+        LocalDateTime creationDate = LocalDateTime.now();
         double price = inputDoubleValue("Введите цену билета");
 
-        System.out.print("Введите значение refundable (true/false): ");
-        String refundableInput = scanner.nextLine();
-        boolean refundable = Boolean.parseBoolean(refundableInput);
-        int id = generateUniqueTicketId();
-        return new Ticket(id, name, coordinates, creationDate.toLocalDateTime(), price, refundable, type, event);
+        return new Ticket(generateUniqueTicketId(), name, coordinates, creationDate, price, true, TicketType.USUAL, event);
     }
     private Coordinates inputCoordinates() {
         System.out.println("Введите координаты:");
@@ -267,16 +262,13 @@ public class TicketManager {
     }
 
     private Event inputEventInfo() {
-        System.out.print("Введите название события: ");
+        //System.out.print("Введите название события: ");
         String eventName = inputStringValue("Введите название события без запятых или точек");
-
-        System.out.print("Введите ID события: ");
+        //System.out.print("Введите ID события: ");
         int eventId = inputIntegerValue("Введите ID события без символов препинания");
-
         System.out.print("Введите дату события в формате 'ГГГГ-ММ-ДД HH:MM': ");
         String eventDateStr = scanner.nextLine();
-        LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm"));
-
+        LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         System.out.print("Введите тип события (E_SPORTS, BASEBALL, BASKETBALL): ");
         String eventTypeStr = scanner.nextLine().toUpperCase();
         EventType eventType;
@@ -285,7 +277,6 @@ public class TicketManager {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("\033[35;1mОшибка: введен некорректный тип события.\033[0m");
         }
-
         return new Event(eventId, eventName, eventDate, eventType);
     }
 
@@ -302,7 +293,7 @@ public class TicketManager {
 
         System.out.print("Введите новую дату события в формате 'ГГГГ-ММ-ДД HH:MM': ");
         String eventDateStr = scanner.nextLine();
-        LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        LocalDateTime eventDate = LocalDateTime.parse(eventDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm"));
 
         System.out.print("Введите новый тип события (E_SPORTS, BASEBALL, BASKETBALL): ");
         String eventTypeStr = scanner.nextLine().toUpperCase();
@@ -647,9 +638,10 @@ public class TicketManager {
         Set<Integer> generatedIds = new HashSet<>();
         Random random = new Random();
         int id;
-        id = random.nextInt(1_000);
+        do {
+            id = random.nextInt(1000) + 1;
+        } while (generatedIds.contains(id));
         generatedIds.add(id);
-
         return id;
     }
 
@@ -657,18 +649,18 @@ public class TicketManager {
         String cvsSplitBy = ",";
 
         System.out.println("\033[0;34m" +
-                String.format("%-4s | %-15s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s",
+                String.format("%-4s | %-15s | %-7s | %-10s | %-35s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s",
                         "ID",
                         "Ticket name",
                         "X",
                         "Y",
-                        "Date of create ticket",
+                        "Creation date",
                         "Price",
                         "Refundable",
                         "Ticket type",
                         "Event ID",
                         "Event name",
-                        "Event Date") +
+                        "Event date") +
                 "\033[0m");
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -676,19 +668,23 @@ public class TicketManager {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(cvsSplitBy);
 
+                Event event = new Event(Integer.parseInt(data[8]), data[9], ZonedDateTime.parse(data[10], DateTimeFormatter.ISO_DATE_TIME).toLocalDateTime(), EventType.valueOf(data[11]));
+
+                Ticket ticket = new Ticket(Integer.parseInt(data[0]), data[1], new Coordinates(Integer.parseInt(data[2]), Double.parseDouble(data[3])), ZonedDateTime.parse(data[4], DateTimeFormatter.ISO_DATE_TIME).toLocalDateTime(), Double.parseDouble(data[5]), Boolean.parseBoolean(data[6]), TicketType.valueOf(data[7]), event);
+
                 System.out.println("\033[0;34m" +
-                        String.format("%-4s | %-15s | %-7s | %-10s | %-50s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s",
-                                data[0],
-                                data[1],
-                                data[2],
-                                data[3],
-                                data[4],
-                                data[5],
-                                data[6],
-                                data[7],
-                                data[8],
-                                data[9],
-                                data[10]) +
+                        String.format("%-4s | %-15s | %-7s | %-10s | %-35s | %-8s | %-12s | %-12s | %-12s | %-12s | %-12s",
+                                ticket.getId(),
+                                ticket.getName(),
+                                String.valueOf(ticket.getCoordinates().getX()),
+                                String.valueOf(ticket.getCoordinates().getY()),
+                                ticket.getCreationDate().format(DateTimeFormatter.ISO_DATE_TIME),
+                                String.valueOf(ticket.getPrice()),
+                                String.valueOf(ticket.isRefundable()),
+                                ticket.getType().name(),
+                                String.valueOf(event.getId()),
+                                event.getName(),
+                                event.getEventDate().format(DateTimeFormatter.ISO_DATE_TIME)) +
                         "\033[0m");
             }
         } catch (IOException e) {

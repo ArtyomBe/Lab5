@@ -29,6 +29,25 @@ public class Ticket {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public boolean isRefundable() {
+        return refundable;
+    }
+
+    public TicketType getType() {
+        return type;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate.toLocalDateTime();
+    }
+
     public static Ticket parseTicket(String input) {
         String[] tokens = input.split(",");
         if (tokens.length < 8) {
