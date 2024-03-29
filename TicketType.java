@@ -2,5 +2,5 @@ public enum TicketType
     {
         USUAL,
         BUDGETARY,
-        CHEAP;
+        CHEAP
     }

@@ -1,5 +1,4 @@
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 
 public class Event
@@ -14,9 +13,6 @@ public class Event
 
     public Object getName() {
         return name;
-    }
-    public ZonedDateTime getDate() {
-        return date;
     }
     public TemporalAccessor getDateTime() {
         return date;

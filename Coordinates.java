@@ -16,11 +16,4 @@ public class Coordinates
         return y;
     }
 
-    public String getXFormatted() {
-        return String.valueOf(x);
-    }
-
-    public String getYFormatted() {
-        return String.valueOf(y);
-    }
 }
