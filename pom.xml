@@ -1,35 +1,45 @@
-<build>
-    <coordinates>
-        <x>0</x>
-        <y>1.0</y>
-    </coordinates>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-    <event>
-    <id>0</id>
-    <name></name>
-    <date>2023-03-24T12:00:00</date>
-    <event-type>E_SPORTS</event-type>
-    </event>
+    <groupId>com.example</groupId>
+    <artifactId>ticket-manager</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-    <event-type>E_SPORTS</event-type>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
-    <ticket>
-    <id>0</id>
-    <name></name>
-    <coordinates>
-        <x>0</x>
-        <y>1.0</y>
-    </coordinates>
-    <creation-date>2023-03-24T12:00:00</creation-date>
-    <price>10.0</price>
-    <refundable>true</refundable>
-    <event>
-        <id>0</id>
-        <name></name>
-        <date>2023-03-24T12:00:00</date>
-        <event-type>E_SPORTS</event-type>
-    </event>
-    </ticket>
+    <dependencies>
+        <!-- Add any dependencies your code needs here, for example: -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.14.1</version>
+        </dependency>
+    </dependencies>
 
-    <ticket-type>USUAL</ticket-type>
-</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.example.main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
